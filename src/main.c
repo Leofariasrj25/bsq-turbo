@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/21 19:52:02 by coder             #+#    #+#             */
-/*   Updated: 2022/04/22 18:31:51 by lfarias-         ###   ########.fr       */
+/*   Created: 2022/04/21 1LINE:52:02 by coder             #+#    #+#             */
+/*   Updated: 2022/04/22 19:38:15 by lfarias-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include "ft.h" // nosso arquivo de cabeçalho contendo todas a funções que iremos criar/usar
+# define COL 28
+# define LINE 9
 
 // definindo um struct que irá conter as coordenadas da posição onde se desenha o quadrado
 // e o tamanho deste
@@ -27,29 +29,25 @@ typedef struct s_square
 // isso precisa ser refatorado, muitos argumentos.
 // possívelmente podemos mudar a matrix para tipo char
 // isso faria o cálculo do tamanho do tabuleiro bem mais simples.
-void	print_matrix(char **matrix, int lines, int cols, t_square *solution)
+void	print_matrix(char matrix[LINE][COL], int lines, int cols, t_square *solution)
 {
 	int	i;
 	int	j;
 
+	i = 0;
 	i = (solution->x) - solution->size;
 	while (i < solution->x)
 	{
+		j = 0;
 		j = solution->y - solution->size;
 		while (j < solution->y)
 			matrix[i][j++] = 'X'; // preenchendo a área do maior quadrado
 		i++;
 	}
 	i = -1;
-	while (++i < lines) // imprime a matrix
+	while (++i < lines)
 	{
-		j = -1;
-		while (++j < cols)
-		{
-			ft_putchar(matrix[i][j]);
-			//ft_putchar(' ');
-		}
-		ft_putchar('\n');
+		printf("%s\n", matrix[i]);
 	}
 }
 
@@ -71,7 +69,7 @@ int menor_num (int n1, int n2, int n3)
 	}
 }
 
-int	**matrix_clone(char **matrix, int line_size, int col_size)
+int	**matrix_clone(char matrix[LINE][COL], int line_size, int col_size)
 {
 	int	i;
 	int	j;
@@ -96,7 +94,7 @@ int	**matrix_clone(char **matrix, int line_size, int col_size)
 	return (clone);
 }
 
-t_square	*find_square(char **matrix, int line_size, int col_size)
+t_square	*find_square(char matrix[LINE][COL], int line_size, int col_size)
 {
 	int lin;
 	int col;
@@ -115,10 +113,12 @@ t_square	*find_square(char **matrix, int line_size, int col_size)
 			{
 				//matrix[lin][col] = 1;
 				if (lin > 0 && col > 0)
-					cache[lin][col] += menor_num(matrix[lin - 1][col], matrix[lin][col - 1], matrix[lin - 1][col - 1]);
-				if (matrix[lin][col] > resposta->size)
+					cache[lin][col] += menor_num(cache[lin - 1][col], cache[lin][col - 1], cache[lin - 1][col - 1]);
+				if (cache[lin][col] > resposta->size)
 				{
-					resposta->size = matrix[lin][col];
+					resposta->size = cache[lin][col];
+					resposta->x = lin + 1;
+					resposta->y = col + 1;
 				}
 			}
 		}
@@ -157,18 +157,19 @@ int	main(void)
 	int i = 0;
 	while (i < linhas)
 		matrix[i++] = (char *) malloc(colunas * sizeof(int));*/
-	char *matrix[] = {
-		"...........................",
-		"....o......................",
-		"............o..............",
-		"...........................",
-		"....o......................",
-		"...............o...........",
-		"...........................",
-		"......o..............o.....",
-		"..o.......o................"
+	char matrix[LINE][COL] = {
+		"...........................\0",
+		"....o......................\0",
+		"............o..............\0",
+		"...........................\0",
+		"....o......................\0",
+		"...............o...........\0",
+		"...........................\0",
+		"......o..............o.....\0",
+		"..o.......o................\0"
 	};
-	int linhas = 9;
+	//matrix[0][6] = 'X';
+	int linhas = LINE;
 	int colunas = ft_strlen(matrix[0]);
 	t_square *solution = find_square(matrix, linhas, colunas);
 	print_matrix(matrix, linhas, colunas, solution);
