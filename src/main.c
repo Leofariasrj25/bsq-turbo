@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 19:52:02 by coder             #+#    #+#             */
-/*   Updated: 2022/04/22 17:37:15 by lfarias-         ###   ########.fr       */
+/*   Updated: 2022/04/22 18:31:51 by lfarias-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	print_matrix(char **matrix, int lines, int cols, t_square *solution)
 	{
 		j = solution->y - solution->size;
 		while (j < solution->y)
-			matrix[i][j++] = -1; // preenchendo a área do maior quadrado
+			matrix[i][j++] = 'X'; // preenchendo a área do maior quadrado
 		i++;
 	}
 	i = -1;
@@ -46,8 +46,8 @@ void	print_matrix(char **matrix, int lines, int cols, t_square *solution)
 		j = -1;
 		while (++j < cols)
 		{
-			ft_putchar(matrix[i][j] + 48);
-			ft_putchar(' ');
+			ft_putchar(matrix[i][j]);
+			//ft_putchar(' ');
 		}
 		ft_putchar('\n');
 	}
@@ -71,6 +71,31 @@ int menor_num (int n1, int n2, int n3)
 	}
 }
 
+int	**matrix_clone(char **matrix, int line_size, int col_size)
+{
+	int	i;
+	int	j;
+	int **clone;
+		
+	clone = malloc(sizeof(int *) * line_size);
+	i = -1;
+	while (++i < line_size)
+		clone[i] = malloc(sizeof(int) * col_size);
+	i = -1;
+	while (++i < line_size)
+	{
+		j = -1;
+		while (++j < col_size)
+		{
+			if (matrix[i][j] == '.')
+				clone[i][j] = 1;
+			else
+				clone[i][j] = 0;
+		}
+	}
+	return (clone);
+}
+
 t_square	*find_square(char **matrix, int line_size, int col_size)
 {
 	int lin;
@@ -79,19 +104,16 @@ t_square	*find_square(char **matrix, int line_size, int col_size)
 	int **cache;
 
 	resposta = malloc(sizeof(t_square));
-	cache = malloc(sizeof(int *) * line_size);
-	lin = -1;
-	while (++lin < line_size)
-		cache[lin] = malloc(sizeof(int) * col_size);
+	cache = matrix_clone(matrix, line_size, col_size);
 	lin = -1;
 	while (++lin < line_size)
 	{
 		col = -1;
 		while (++col < col_size)
 		{
-			if (cache[(col_size + 1) * lin + col + 5] == '.')
+			if (cache[lin][col] == 1)
 			{
-				matrix[lin][col] = 1;
+				//matrix[lin][col] = 1;
 				if (lin > 0 && col > 0)
 					cache[lin][col] += menor_num(matrix[lin - 1][col], matrix[lin][col - 1], matrix[lin - 1][col - 1]);
 				if (matrix[lin][col] > resposta->size)
@@ -106,7 +128,7 @@ t_square	*find_square(char **matrix, int line_size, int col_size)
 
 int	main(void)
 {
-	// Essa primeira parte tem que ser feita em uma funcao separada,
+	/*// Essa primeira parte tem que ser feita em uma funcao separada,
 	// pra saber quantos mapas foram recebidos, se recebeu mapa ou nao etc;
 	//se for 3 quer dizer que ele conseguiu ler e existe (olhar melhor sobre)
 	int fd = open("maps/map2", 'r');
@@ -129,21 +151,29 @@ int	main(void)
 	int linhas = c[0] - 48;
 	int colunas = (sz - 5 - linhas) / linhas;
 	printf("Coluna: %d\n", colunas);
-	printf("Linhas: %d\n", linhas);
+	printf("Linhas: %d\n", linhas);*/
 
-	// parte da logica
-	// alocando a matrix
-	char **matrix = (char **) malloc(linhas * sizeof(int*));
+	/*char **matrix = (char **) malloc(linhas * sizeof(int*));
 	int i = 0;
 	while (i < linhas)
-	{
-		matrix[i] = (char *) malloc(colunas * sizeof(int));
-		i++;
-	}
+		matrix[i++] = (char *) malloc(colunas * sizeof(int));*/
+	char *matrix[] = {
+		"...........................",
+		"....o......................",
+		"............o..............",
+		"...........................",
+		"....o......................",
+		"...............o...........",
+		"...........................",
+		"......o..............o.....",
+		"..o.......o................"
+	};
+	int linhas = 9;
+	int colunas = ft_strlen(matrix[0]);
 	t_square *solution = find_square(matrix, linhas, colunas);
 	print_matrix(matrix, linhas, colunas, solution);
-	free(matrix);
-	free(c);
+	//free(matrix);
+	//free(c);
 	return (0);
 }
 
