@@ -6,7 +6,7 @@
 /*   By: lfarias- <leofariasrj25@gmail.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 05:10:10 by lfarias-          #+#    #+#             */
-/*   Updated: 2022/04/22 05:12:10 by lfarias-         ###   ########.fr       */
+/*   Updated: 2022/04/22 05:52:26 by lfarias-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	ft_putstr(char *str)
 {
-	while(*str != '\0')
+	while (*str != '\0')
 	{
 		ft_putchar(*str);
 		str++;
