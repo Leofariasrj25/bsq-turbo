@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 19:52:02 by coder             #+#    #+#             */
-/*   Updated: 2022/04/22 04:47:33 by lfarias-         ###   ########.fr       */
+/*   Updated: 2022/04/22 08:35:06 by lfarias-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,33 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include "ft.h"
+
+void	print_matrix(int *matrix[], int lines, int cols, int solution_x, int solution_y, int solution)
+{
+	int	i;
+	int	j;
+
+	i = solution_x - solution;
+	while (i < solution_x)
+	{
+		j = solution_y - solution;
+		while (j < solution_y)
+			matrix[i][j++] = -1;
+		i++;
+	}
+	i = -1;
+	while (++i < lines)
+	{
+		j = -1;
+		while (++j < cols)
+		{
+			ft_putchar(matrix[i][j] + 48);
+			ft_putchar(' ');
+		}
+		ft_putchar('\n');
+	}
+}
 
 int menor_num (int n1, int n2, int n3)
 {
@@ -104,7 +131,7 @@ int	main(void)
 	printf("Lugar: %d, %d\n", lin_menor, col_menor);
 
 	// PRINTANDO A MATRIZ RESULTADO
-	int a = 0;
+	/*int a = 0;
 	int b = 0;
 	while (a < linhas)
 	{
@@ -116,9 +143,10 @@ int	main(void)
 		}
 		printf("\n");
 		a++;
-	}
-
+	}*/
+	print_matrix(matriz, linhas, colunas, lin_menor, col_menor, resposta);
 	free(matriz);
 	free(c);
 	return (0);
 }
+
