@@ -6,16 +6,18 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 19:52:02 by coder             #+#    #+#             */
-/*   Updated: 2022/04/22 08:35:06 by lfarias-         ###   ########.fr       */
+/*   Updated: 2022/04/22 09:08:33 by lfarias-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include "ft.h"
+#include "ft.h" // nosso arquivo de cabeçalho contendo todas a funções que iremos criar/usar
 
+// isso precisa ser refatorado, muitos argumentos.
+// possívelmente podemos mudar a matriz para tipo char
+// isso faria o cálculo do tamanho do tabuleiro bem mais simples.
 void	print_matrix(int *matrix[], int lines, int cols, int solution_x, int solution_y, int solution)
 {
 	int	i;
@@ -26,11 +28,11 @@ void	print_matrix(int *matrix[], int lines, int cols, int solution_x, int soluti
 	{
 		j = solution_y - solution;
 		while (j < solution_y)
-			matrix[i][j++] = -1;
+			matrix[i][j++] = -1; // preenchendo a área do maior quadrado
 		i++;
 	}
 	i = -1;
-	while (++i < lines)
+	while (++i < lines) // imprime a matriz
 	{
 		j = -1;
 		while (++j < cols)
@@ -130,20 +132,6 @@ int	main(void)
 	printf("Resposta: %d\n", resposta);
 	printf("Lugar: %d, %d\n", lin_menor, col_menor);
 
-	// PRINTANDO A MATRIZ RESULTADO
-	/*int a = 0;
-	int b = 0;
-	while (a < linhas)
-	{
-		b = 0;
-		while (b < colunas)
-		{
-			printf("%d ", matriz[a][b]);
-			b++;
-		}
-		printf("\n");
-		a++;
-	}*/
 	print_matrix(matriz, linhas, colunas, lin_menor, col_menor, resposta);
 	free(matriz);
 	free(c);
