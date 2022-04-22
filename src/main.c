@@ -6,7 +6,7 @@
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/21 19:52:02 by coder             #+#    #+#             */
-/*   Updated: 2022/04/22 09:08:33 by lfarias-         ###   ########.fr       */
+/*   Updated: 2022/04/22 17:37:15 by lfarias-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,33 @@
 #include <stdlib.h>
 #include "ft.h" // nosso arquivo de cabeçalho contendo todas a funções que iremos criar/usar
 
+// definindo um struct que irá conter as coordenadas da posição onde se desenha o quadrado
+// e o tamanho deste
+typedef struct s_square
+{
+	int	x;
+	int	y;
+	int	size;
+} t_square;
+
 // isso precisa ser refatorado, muitos argumentos.
-// possívelmente podemos mudar a matriz para tipo char
+// possívelmente podemos mudar a matrix para tipo char
 // isso faria o cálculo do tamanho do tabuleiro bem mais simples.
-void	print_matrix(int *matrix[], int lines, int cols, int solution_x, int solution_y, int solution)
+void	print_matrix(char **matrix, int lines, int cols, t_square *solution)
 {
 	int	i;
 	int	j;
 
-	i = solution_x - solution;
-	while (i < solution_x)
+	i = (solution->x) - solution->size;
+	while (i < solution->x)
 	{
-		j = solution_y - solution;
-		while (j < solution_y)
+		j = solution->y - solution->size;
+		while (j < solution->y)
 			matrix[i][j++] = -1; // preenchendo a área do maior quadrado
 		i++;
 	}
 	i = -1;
-	while (++i < lines) // imprime a matriz
+	while (++i < lines) // imprime a matrix
 	{
 		j = -1;
 		while (++j < cols)
@@ -60,6 +69,39 @@ int menor_num (int n1, int n2, int n3)
 		else
 			return (n3);
 	}
+}
+
+t_square	*find_square(char **matrix, int line_size, int col_size)
+{
+	int lin;
+	int col;
+	t_square *resposta;
+	int **cache;
+
+	resposta = malloc(sizeof(t_square));
+	cache = malloc(sizeof(int *) * line_size);
+	lin = -1;
+	while (++lin < line_size)
+		cache[lin] = malloc(sizeof(int) * col_size);
+	lin = -1;
+	while (++lin < line_size)
+	{
+		col = -1;
+		while (++col < col_size)
+		{
+			if (cache[(col_size + 1) * lin + col + 5] == '.')
+			{
+				matrix[lin][col] = 1;
+				if (lin > 0 && col > 0)
+					cache[lin][col] += menor_num(matrix[lin - 1][col], matrix[lin][col - 1], matrix[lin - 1][col - 1]);
+				if (matrix[lin][col] > resposta->size)
+				{
+					resposta->size = matrix[lin][col];
+				}
+			}
+		}
+	}
+	return (resposta);
 }
 
 int	main(void)
@@ -90,50 +132,17 @@ int	main(void)
 	printf("Linhas: %d\n", linhas);
 
 	// parte da logica
-	// alocando a matriz
-	int **matriz = (int **) malloc(linhas * sizeof(int*));
+	// alocando a matrix
+	char **matrix = (char **) malloc(linhas * sizeof(int*));
 	int i = 0;
-	while (i < colunas)
+	while (i < linhas)
 	{
-		matriz[i] = (int *) malloc(colunas * sizeof (int*));
+		matrix[i] = (char *) malloc(colunas * sizeof(int));
 		i++;
 	}
-
-	int lin = 0;
-	int col;
-
-	int resposta = 0;
-	int lin_menor;
-	int col_menor;
-	
-	while (lin < linhas)
-	{
-		col = 0;
-		while (col < colunas)
-		{
-			if (c[(colunas + 1) * lin + col + 5] == '.')
-			{
-				matriz[lin][col] = 1;
-				if (lin > 0 && col > 0)
-				{
-					matriz[lin][col] += menor_num(matriz[lin - 1][col], matriz[lin][col - 1], matriz[lin - 1][col - 1]);
-				}
-				if (matriz[lin][col] > resposta)
-				{
-					resposta = matriz[lin][col];
-					lin_menor = lin + 1;
-					col_menor = col + 1;
-				}
-			}
-			col++;
-		}
-		lin++;
-	}
-	printf("Resposta: %d\n", resposta);
-	printf("Lugar: %d, %d\n", lin_menor, col_menor);
-
-	print_matrix(matriz, linhas, colunas, lin_menor, col_menor, resposta);
-	free(matriz);
+	t_square *solution = find_square(matrix, linhas, colunas);
+	print_matrix(matrix, linhas, colunas, solution);
+	free(matrix);
 	free(c);
 	return (0);
 }
