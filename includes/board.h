@@ -1,21 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft.h                                               :+:      :+:    :+:   */
+/*   board.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lfarias- <leofariasrj25@gmail.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/22 05:07:52 by lfarias-          #+#    #+#             */
-/*   Updated: 2022/04/23 20:24:43 by lfarias-         ###   ########.fr       */
+/*   Created: 2022/04/23 21:21:16 by lfarias-          #+#    #+#             */
+/*   Updated: 2022/04/23 21:28:39 by lfarias-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_H
-# define FT_H
-# include <unistd.h>
+#ifndef BOARD_H
+# define BOARD_H
 
-void	ft_putchar(char c);
-void	ft_putstr(char *str);
-int		ft_strlen(char *str);
-int		ft_file_size(char *str);
+typedef struct s_board
+{
+	char	**board;
+	int		lines;
+	int		cols;
+	char	filled;
+	char	obstacle;
+	char	empty;
+} t_board;
 #endif

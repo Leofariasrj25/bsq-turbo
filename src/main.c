@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: coder <coder@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/21 1LINE:52:02 by coder             #+#    #+#             */
-/*   Updated: 2022/04/22 19:38:15 by lfarias-         ###   ########.fr       */
+/*   Created: 2022/04/21 1LINE:52:02 by coder             #+#    #+#          */
+/*   Updated: 2022/04/23 21:30:59 by lfarias-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,13 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include "ft.h" // nosso arquivo de cabeçalho contendo todas a funções que iremos criar/usar
+#include "square.h"
+#include "board.h"
 # define COL 28
 # define LINE 9
 
 // definindo um struct que irá conter as coordenadas da posição onde se desenha o quadrado
 // e o tamanho deste
-typedef struct s_square
-{
-	int	x;
-	int	y;
-	int	size;
-} t_square;
-
 // isso precisa ser refatorado, muitos argumentos.
 // possívelmente podemos mudar a matrix para tipo char
 // isso faria o cálculo do tamanho do tabuleiro bem mais simples.
@@ -41,18 +36,26 @@ void	print_matrix(char matrix[LINE][COL], int lines, int cols, t_square *solutio
 		j = 0;
 		j = solution->y - solution->size;
 		while (j < solution->y)
-			matrix[i][j++] = 'X'; // preenchendo a área do maior quadrado
+			matrix[i][j++] = 'x'; // preenchendo a área do maior quadrado
 		i++;
 	}
 	i = -1;
 	while (++i < lines)
 	{
-		printf("%s\n", matrix[i]);
+		ft_putstr(matrix[i]);
+		ft_putstr("\n");
 	}
 }
 
-int menor_num (int n1, int n2, int n3)
+int	menor_num(int **cache, int lin, int col)
 {
+	int	n1;
+	int	n2;
+	int	n3;
+
+	n1 = cache[lin - 1][col];
+	n2 = cache[lin][col - 1];
+	n3 = cache[lin - 1][col - 1];
 	if (n1 < n2)
 	{
 		if (n1 < n3)
@@ -69,12 +72,12 @@ int menor_num (int n1, int n2, int n3)
 	}
 }
 
-int	**matrix_clone(char matrix[LINE][COL], int line_size, int col_size)
+int	**matrix_clone(char **matrix, int line_size, int col_size)
 {
 	int	i;
 	int	j;
-	int **clone;
-		
+	int	**clone;
+
 	clone = malloc(sizeof(int *) * line_size);
 	i = -1;
 	while (++i < line_size)
@@ -94,7 +97,7 @@ int	**matrix_clone(char matrix[LINE][COL], int line_size, int col_size)
 	return (clone);
 }
 
-t_square	*find_square(char matrix[LINE][COL], int line_size, int col_size)
+t_square	*find_square(t_board *board, int line_size, int col_size)
 {
 	int lin;
 	int col;
@@ -102,61 +105,66 @@ t_square	*find_square(char matrix[LINE][COL], int line_size, int col_size)
 	int **cache;
 
 	resposta = malloc(sizeof(t_square));
-	cache = matrix_clone(matrix, line_size, col_size);
+	cache = matrix_clone(board->board, board->lines, board->cols);
 	lin = -1;
 	while (++lin < line_size)
 	{
 		col = -1;
 		while (++col < col_size)
 		{
-			if (cache[lin][col] == 1)
+			if ((lin > 0 && col > 0) && cache[lin][col] != 0)
+				cache[lin][col] += menor_num(cache, lin, col);
+			if (cache[lin][col] > resposta->size)
 			{
-				//matrix[lin][col] = 1;
-				if (lin > 0 && col > 0)
-					cache[lin][col] += menor_num(cache[lin - 1][col], cache[lin][col - 1], cache[lin - 1][col - 1]);
-				if (cache[lin][col] > resposta->size)
-				{
-					resposta->size = cache[lin][col];
-					resposta->x = lin + 1;
-					resposta->y = col + 1;
-				}
+				resposta->size = cache[lin][col];
+				resposta->x = lin + 1;
+				resposta->y = col + 1;
 			}
 		}
 	}
 	return (resposta);
 }
 
-int	main(void)
+int	main(int argc, char *argv[])
 {
-	/*// Essa primeira parte tem que ser feita em uma funcao separada,
+	// Essa primeira parte tem que ser feita em uma funcao separada,
 	// pra saber quantos mapas foram recebidos, se recebeu mapa ou nao etc;
 	//se for 3 quer dizer que ele conseguiu ler e existe (olhar melhor sobre)
-	int fd = open("maps/map2", 'r');
-	int sz = 0;
-	char *c = malloc(100);
+	int map_fd;
+	int map_size;
+	char *map_buffer;
 
-	// numero de bytes lidos
-	sz = read(fd, c, 100);
-	printf("sz: %d\n", sz);
-
-	// -----------------
-	// Comeca a partir do 5 para pular a primeira linha, onde só tem as informações
-	//Checar se precisa ler as informações da primeira linha, já sei que o primeiro precisa por ser o numero de linhas
-	int x = 5;
-	while (c[x])
+	// rewriting
+	int arg = 1;
+	while (argc > 1 && arg < argc)
 	{
-		// printf("Escrito: %c\n", c[x]);
-		x++;
+		map_fd = open(argv[arg], O_RDONLY);
+		if (map_fd != -1)
+		{
+			map_size = ft_file_size(argv[arg]);
+			map_buffer = malloc(sizeof(char) * map_size + 1);
+			read(map_fd, map_buffer, map_size);
+			printf("%s\n", map_buffer);
+		}
+		else
+		{
+			// TO-DO: logica para tratar cada argv como linha do array;
+		}
+		// lógica para montar a string em matriz de char
+		
+		// inserir o tabuleiro em uma struct que contém todos os dados
+		// matrix = o tabuleiro montado a partir da string
+		// empty, filled, obstacle são os caracteres enviados pelo usuário
+		t_board *board = create_board(matrix, empty, filled, obstacle);
+		t_square *solution = find_square(board, board->lines, board->cols);
+		arg++;
 	}
-	int linhas = c[0] - 48;
-	int colunas = (sz - 5 - linhas) / linhas;
-	printf("Coluna: %d\n", colunas);
-	printf("Linhas: %d\n", linhas);*/
-
+	free(map_buffer);
+	return (0);
 	/*char **matrix = (char **) malloc(linhas * sizeof(int*));
 	int i = 0;
 	while (i < linhas)
-		matrix[i++] = (char *) malloc(colunas * sizeof(int));*/
+		matrix[i++] = (char *) malloc(colunas * sizeof(int));
 	char matrix[LINE][COL] = {
 		"...........................\0",
 		"....o......................\0",
@@ -172,9 +180,5 @@ int	main(void)
 	int linhas = LINE;
 	int colunas = ft_strlen(matrix[0]);
 	t_square *solution = find_square(matrix, linhas, colunas);
-	print_matrix(matrix, linhas, colunas, solution);
-	//free(matrix);
-	//free(c);
-	return (0);
+	print_matrix(matrix, linhas, colunas, solution);*/
 }
-

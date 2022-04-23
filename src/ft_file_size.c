@@ -1,21 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft.h                                               :+:      :+:    :+:   */
+/*   ft_seek.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lfarias- <leofariasrj25@gmail.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/22 05:07:52 by lfarias-          #+#    #+#             */
-/*   Updated: 2022/04/23 20:24:43 by lfarias-         ###   ########.fr       */
+/*   Created: 2022/04/23 18:46:50 by lfarias-          #+#    #+#             */
+/*   Updated: 2022/04/23 20:20:19 by lfarias-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_H
-# define FT_H
-# include <unistd.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
 
-void	ft_putchar(char c);
-void	ft_putstr(char *str);
-int		ft_strlen(char *str);
-int		ft_file_size(char *str);
-#endif
+int ft_file_size(char *str)
+{
+	int	fd;
+	char *buff;
+	int f_size;
+
+	fd = open(str, O_RDONLY);
+	if (fd != -1)
+	{
+		buff = malloc(1);
+		f_size = 0;
+		while (read(fd, buff, 1) != 0)
+			f_size++;
+		close(fd);
+		free(buff);
+		return f_size;
+	}
+}

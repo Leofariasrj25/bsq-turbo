@@ -1,21 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft.h                                               :+:      :+:    :+:   */
+/*   square.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: lfarias- <leofariasrj25@gmail.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/22 05:07:52 by lfarias-          #+#    #+#             */
-/*   Updated: 2022/04/23 20:24:43 by lfarias-         ###   ########.fr       */
+/*   Created: 2022/04/22 21:23:19 by lfarias-          #+#    #+#             */
+/*   Updated: 2022/04/22 21:26:37 by lfarias-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_H
-# define FT_H
-# include <unistd.h>
+#ifndef SQUARE_H
+# define SQUARE_H
 
-void	ft_putchar(char c);
-void	ft_putstr(char *str);
-int		ft_strlen(char *str);
-int		ft_file_size(char *str);
+typedef struct s_square
+{
+	int	x;
+	int	y;
+	int	size;
+} t_square;
 #endif
+
